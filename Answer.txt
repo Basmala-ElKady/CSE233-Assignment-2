@@ -1,34 +1,48 @@
 CSE233 Assignment 2 Answers
 
-1. Code Examples from Lab-5:
+Code Examples from Lab-5:
 
-   a. process_creation.c (Exercise 1: Using fork() in C)
-      This program creates a child process with fork(). Fork duplicates the parent; pid=0 in child, >0 in parent, <0 on fail. Child prints its PID, parent prints its.
-      Output: 
-      This is the parent process. PID: 1
-      This is the child process. PID: 2
-      (PIDs vary; order random due to scheduling.)
-      Compile: gcc process_creation.c -o process_creation
-      Run: ./process_creation
+a. process_creation.c (Exercise 1: Using fork() in C)
 
-   b. file1.c and file2.c (Exercise 5: Role of the Linker)
-      Separate files: file1 defines hello() which prints a message; file2 declares and calls it in main.
-      Linker combines them into one executable.
-      Output: Hello from file1!
-      Compile: gcc file1.c file2.c -o output_program
-      Run: ./output_program
-      Modify file1 (e.g., change message), recompile—output updates.
+Description: This program demonstrates process creation using fork(). The fork() call duplicates the parent process, creating a child. The return value (pid) is 0 in the child, positive in the parent, and negative on failure. The child prints its PID, and the parent prints its own.
+Output example:
+This is the parent process. PID: 1
+This is the child process. PID: 2
+(Note: PIDs vary; output order is random due to process scheduling.)
+Compilation: gcc process_creation.c -o process_creation
+Execution: ./process_creation
+b. file1.c and file2.c (Exercise 5: Role of the Linker)
 
-   c. simple_program.c (Exercise 6: Role of the Loader)
-      Simple printf program; loader loads dynamic libs like libc at runtime.
-      Output: This is a simple program.
-      Compile: gcc simple_program.c -o simple_program
-      Run: ./simple_program
-      Check libs: ldd simple_program (shows libc.so.6, etc.)
+Description: These are two separate source files. file1.c defines the hello() function that prints a message. file2.c declares hello() and calls it from main(). The linker resolves the function reference by combining both files into one executable.
+Output: Hello from file1!
+Compilation: gcc file1.c file2.c -o output_program
+Execution: ./output_program
+Modification test: Change the print message in file1.c, recompile, and run—the output updates to reflect the change.
+c. simple_program.c (Exercise 6: Role of the Loader)
 
-2. Job of the Linker:
-   Combines object files (.o) and libs into an executable. Resolves symbols (e.g., links hello() call to definition) and relocates addresses for memory.
+Description: A basic program using printf() from the standard library. It shows how the loader handles dynamic linking to libraries like libc at runtime.
+Output: This is a simple program.
+Compilation: gcc simple_program.c -o simple_program
+Execution: ./simple_program
+Library check: ldd simple_program (example output: libc.so.6, linux-vdso.so.1, etc.)
+Note on Exercises 2-4: These are shell-based process management commands (not C code), so no .c files are included. I executed them in a Linux terminal (Alpine via JSLinux). Screenshots are added to the repo in one combined image (ex2-4_process_control.png):
 
-3. Job of the Loader:
-   OS loads executable into memory, sets up environment (stack, heap), loads dynamic libs, and jumps to main(). Handles runtime deps like printf.
+Ex2 (Background): Started sleep 300 &; listed with jobs (shows [1]+ Running sleep 300 &).
+Ex3 (Stop): Found PID with ps aux | grep sleep (e.g., PID 94); killed with kill 94; verified with ps aux | grep sleep (no process remains).
+Ex4 (Pause/Resume): Started sleep 300 & (PID 97); paused with kill -STOP 97 (ps shows stopped state); resumed with kill -CONT 97 (ps shows running state again).
+Job of the Linker:
 
+The linker is a tool in the compilation process that takes object files (.o) and libraries, combining them into a single executable binary.
+Key tasks:
+Symbol resolution: Matches function/variable references (e.g., the hello() call in file2.c to its definition in file1.c).
+Relocation: Adjusts memory addresses so the code works correctly when loaded.
+Without it, separate modules couldn't interact.
+Job of the Loader:
+
+The loader is an OS component (e.g., part of execve() in Linux) that prepares an executable for running.
+Key tasks:
+Loads the binary from disk into memory.
+Initializes the process environment (e.g., sets up stack, heap, and registers).
+Handles dynamic libraries: Maps shared libs (like libc.so for printf) at runtime, resolving any remaining symbols.
+Transfers control to the program's entry point (main()).
+Example: In simple_program.c, it dynamically loads libc.so when printf is called.
