@@ -17,5 +17,5 @@ make          # compiles everything
 ./process_creation   # shows parent & child processes
 ./output_program     # prints "Hello from file1!"
 ./simple_program     # prints the message
-ldd simple_program   # lists dynamically loaded libraries
+ libraries
 make clean    # removes executables and object files
